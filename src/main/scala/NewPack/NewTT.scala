@@ -92,7 +92,7 @@ object NewTT {
 
   def main(args : Array[String]): Unit ={
 
-//  call new function with testing values
+//  calling new function with test values
     val testNewETL = newETL("2020-07-01","2020-10-22")
     println(testNewETL)
 
