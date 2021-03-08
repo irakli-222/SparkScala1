@@ -7,6 +7,7 @@ object NewTT {
   import org.apache.spark.sql.functions._
   import org.apache.spark.sql.DataFrame
 
+
   val sc = new SparkContext("local[*]" , "ScalaProj2")
   import org.apache.spark.sql.SparkSession
   val spark = SparkSession
@@ -17,6 +18,7 @@ object NewTT {
     .getOrCreate()
   import spark.implicits._
 
+  val current_time = spark.range(1).select(unix_timestamp as "current_timestamp").first().get(0).toString
 
   def newETL(dateFrom: String, dateTo: String): String ={
 
@@ -86,8 +88,9 @@ object NewTT {
       .select($"t.inp_date", $"t.IBAN_T", $"t.AMOUNT", $"ccy.CCYFrom", $"ccy.rate", $"cnt.transaction_count", $"c.FirstName",$"c.LastName",$"c.Age")
       .orderBy($"t.inp_date", $"t.IBAN_T", $"ccy.CCYFrom")
 
+
     //    save DF to Hive
-    allTransactionData.write.mode("overwrite").saveAsTable("FullTransactionData")
+    allTransactionData.write.mode("overwrite").saveAsTable(current_time+"_FullTransactionData")
 
     return allTransactionData
   }
@@ -100,13 +103,13 @@ object NewTT {
     transAggr.show()
 
     //    write into CSV file
-    transAggr.write.format("csv").save("spark-warehouse\\OutputCSV")
+    transAggr.write.format("csv").save("spark-warehouse\\"+current_time+"_OutputCSV" )
 
     return transAggr
   }
 
 
-  
+
 //Main call
   def main(args : Array[String]): Unit ={
 
